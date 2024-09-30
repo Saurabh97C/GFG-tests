@@ -111,25 +111,62 @@ class Solution {
     // Function to return a list of integers denoting the node
     // values of both the BST in a sorted order.
     public List<Integer> merge(Node root1, Node root2) {
-        PriorityQueue<Integer> pq = new PriorityQueue<>();
-        inorder(root1, pq);
-        inorder(root2, pq);
-        List<Integer> ans = new ArrayList<>();
         
-       
-        while (!pq.isEmpty()) {
-            ans.add(pq.poll());
+        TreeMap<Node, Integer> map = new TreeMap<>((n1, n2)->{
+            int cmp = Integer.compare(n1.data, n2.data);
+            if(cmp==0)
+            {
+                return Integer.compare(System.identityHashCode(n1), System.identityHashCode(n2));
+            }
+            return cmp;
+        });
+        
+        List<Node> al1 = bfs(root1);
+        List<Node> al2 = bfs(root2);
+        
+        for(int i=0; i<al1.size(); i++)
+        {
+            map.put(al1.get(i), 1);
+        }
+        for(int i=0; i<al2.size(); i++)
+        {
+            map.put(al2.get(i), 1);
         }
         
-        return ans;
+        List<Integer> finallist = new ArrayList<>();
+        
+        for(Map.Entry<Node, Integer> entry: map.entrySet())
+        {
+            Node a = entry.getKey();
+            finallist.add(a.data);
+        }
+        
+        return finallist;
+        
     }
-    
-    public void inorder(Node root, PriorityQueue<Integer> pq) {
-        if (root == null) {
-            return;
+
+    public List<Node> bfs(Node root)
+    {
+        List<Node> al = new ArrayList<>();
+        Queue<Node> q = new LinkedList<>();
+        
+        q.add(root);
+        
+        while(!q.isEmpty())
+        {
+            Node temp = q.remove();
+            al.add(temp);
+            
+            if(temp.left!=null)
+            {
+                q.add(temp.left);
+            }
+            
+            if(temp.right!=null)
+            {
+                q.add(temp.right);
+            }
         }
-        inorder(root.left, pq);
-        pq.add(root.data);
-        inorder(root.right, pq);
+        return al;
     }
 }
